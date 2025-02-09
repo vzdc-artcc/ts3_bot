@@ -97,9 +97,10 @@ teamspeak.on("clientconnect", async (connected) => {
 
   if (Object.keys(data).length === 0) {
     client.message(
-      "You have not registered your Teamspeak Unique ID on your profile in the vZDC website. Please do so at your earliest convenience."
+      "You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, as well as assigning online position roles."
     );
-    client.message("You can find your Teamspeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID")
+    client.message("You can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID")
+    client.message("After you have added your Unique ID to your profile, please disconnect from the server and reconnect.")
     return;
   }
 
