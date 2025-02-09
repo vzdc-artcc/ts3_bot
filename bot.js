@@ -108,11 +108,7 @@ teamspeak.on("clientconnect", async (connected) => {
   const data = await res.json();
 
   if (Object.keys(data).length === 0) {
-    client.message(
-      "You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, as well as assigning online position roles."
-    );
-    client.message("You can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID")
-    client.message("After you have added your Unique ID to your profile, please disconnect from the server and reconnect.")
+    client.poke("You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, as well as assigning online position roles.\nYou can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID\nAfter you have added your Unique ID to your profile, please disconnect from the server and reconnect.");
     return;
   }
 
@@ -142,6 +138,8 @@ teamspeak.on("clientconnect", async (connected) => {
   }
 
   switch (rating) {
+    case 0:
+      client.kickFromServer("Suspended members do not have access to the TeamSpeak");
     case 1:
       if (!serverGroupsById.some((item) => item.name === "Observer")) {
         clearRatings(client)
@@ -188,6 +186,18 @@ teamspeak.on("clientconnect", async (connected) => {
       if (!serverGroupsById.some((item) => item.name === "Senior Instructor")) {
         clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Senior Instructor"));
+      }
+      break;
+    case 11:
+      if (!serverGroupsById.some((item) => item.name === "VATSIM Supervisor")) {
+        clearRatings(client)
+        client.addGroups(await teamspeak.getServerGroupByName("VATSIM Supervisor"));
+      }
+      break;
+    case 12:
+      if (!serverGroupsById.some((item) => item.name === "VATSIM Admin")) {
+        clearRatings(client)
+        client.addGroups(await teamspeak.getServerGroupByName("VATSIM Admin"));
       }
       break;
   }
