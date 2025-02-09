@@ -55,24 +55,36 @@ const positionUpdate = async () => {
       } catch(err) {
         console.log(err.msg);
       }
+    }else{
+      removePosition(client);
     }
   });
-};
+}
 
 const clearRatings = async (client) => {
   const ratings = ["Observer","Tower Trainee","Tower Controller","Radar Controller","Controller","Senior Controller","Instructor","Senior Instructor"];
   const clientUid = TeamSpeakClient.getUid(client);
   const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
 
-  const serverGroupsById = await teamspeak.serverGroupsByClientId(
-    clientDbid.cldbid
-  );
+  const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
 
   serverGroupsById.forEach(async (serverGroup)=>{
     if(ratings.includes(serverGroup.name)){
       client.delGroups(await teamspeak.getServerGroupByName(serverGroup.name));
     }
   })
+}
+
+const removePosition = async (client) => {
+  const clientDbid = client.propcache.clientDatabaseId;
+  const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid);
+
+  const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
+
+  if(positionToDelete){
+    await teamspeak.serverGroupDelClient(clientDbid, positionToDelete.sgid);
+    await teamspeak.serverGroupDel(positionToDelete.sgid);
+  }
 }
 
 teamspeak.on("ready", async () => {
@@ -181,18 +193,9 @@ teamspeak.on("clientconnect", async (connected) => {
   }
 })
 
-teamspeak.on("clientdisconnect", async (data) => {
-
-  const clientDbid = data.client.propcache.clientDatabaseId;
-  const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid);
-
-  const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
-
-  if(positionToDelete){
-    await teamspeak.serverGroupDelClient(clientDbid, positionToDelete.sgid);
-    await teamspeak.serverGroupDel(positionToDelete.sgid);
-  }
-
+teamspeak.on("clientdisconnect", async (connected) => {
+  const client = connected.client;
+  removePosition(client);
 });
 
 teamspeak.on("error", () => {});
