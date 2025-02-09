@@ -78,35 +78,6 @@ const clearRatings = async (client) => {
 teamspeak.on("ready", async () => {
   positionUpdate();
   setInterval(positionUpdate,60*1000);
-  // const createdServerGroup = await teamspeak.serverGroupCreate("testCreateFromBot");
-  // console.log(createdServerGroup.propcache.sgid)
-
-  // const permtest = await teamspeak.permGet("i_group_show_name_in_tree");
-  // console.log(permtest);
-
-  // // const test = teamspeak.permissionList();
-  // // console.log()
-
-  // // const whoami = await teamspeak.whoami();
-  // // console.log(whoami)
-
-  // // const testPerm = await teamspeak.serverGroupPermList(76);
-  // // console.log(testPerm)
-  // // const servergroupaddperm = await teamspeak.serverGroupAddPerm(76, {
-  // //   permname: "i_group_show_name_in_tree",
-  // //   permvalue: 1,
-  // //   skip: false,
-  // //   negate: false,
-  // // })
-
-  // const test = await createdServerGroup.addPerm({
-  //   permname: "i_group_show_name_in_tree",
-  //   permvalue: 1,
-  //   skip: false,
-  //   negate: false,
-  // });
-
-  // await createdServerGroup.addClient(1786);
 });
 
 teamspeak.on("clientconnect", async (connected) => {
