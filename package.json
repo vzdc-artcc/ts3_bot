@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ts3-nodejs-library": "^3.5.1"
+  }
+}
