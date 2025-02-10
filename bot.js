@@ -23,7 +23,6 @@ const positionUpdate = async () => {
 
   clients.forEach(async (client) => {
     const clientUid = TeamSpeakClient.getUid(client);
-    const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
 
     const res = await fetch(
       `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
@@ -207,7 +206,17 @@ teamspeak.on("clientconnect", async (connected) => {
 
 teamspeak.on("clientdisconnect", async (connected) => {
   const client = connected.client;
-  removePosition(client);
+  try{
+    removePosition(client);
+  }catch(err){
+    console.log(err);
+  }
 });
+
+teamspeak.on("close", async () => {
+  console.log("disconnected, trying to reconnect...")
+  await teamspeak.reconnect(-1, 5000)
+  console.log("reconnected!")
+})
 
 teamspeak.on("error", () => {});
