@@ -44,8 +44,12 @@ const positionUpdate = async () => {
     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
 
     if (position) {
-      const previousPosition = serverGroupsById.find((item) => item.name.includes("_"));
+      if (serverGroupsById.some((item)=> item.name===position)){
+        return;
+      }
 
+      const previousPosition = serverGroupsById.find((item) => item.name.includes("_"));
+      
       if (previousPosition && previousPosition.name !== position){
         removePosition(client);
       }
@@ -67,6 +71,7 @@ const positionUpdate = async () => {
         // await createdServerGroup.delPerm('b_group_is_permanent');
         await createdServerGroup.addClient(client);
       } catch(err) {
+        console.log(position);
         console.log(err.msg);
       }
     }else{
