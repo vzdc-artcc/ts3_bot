@@ -20,11 +20,12 @@ const teamspeak = new TeamSpeak({
 
 const positionUpdate = async () => {
   const clients = await teamspeak.clientList({ clientType: 0 });
-  const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
+  
 
   clients.forEach(async (client) => {
     const clientUid = TeamSpeakClient.getUid(client);
-
+    const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
+    
     const res = await fetch(
       `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
       {
