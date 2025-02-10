@@ -20,6 +20,7 @@ const teamspeak = new TeamSpeak({
 
 const positionUpdate = async () => {
   const clients = await teamspeak.clientList({ clientType: 0 });
+  const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
 
   clients.forEach(async (client) => {
     const clientUid = TeamSpeakClient.getUid(client);
@@ -40,7 +41,21 @@ const positionUpdate = async () => {
 
     const position = data.onlinePosition;
 
+    const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
+
     if (position) {
+      const previousPosition = serverGroupsById.find((item) => item.name.includes("_"));
+
+      if (previousPosition && previousPosition.name !== position){
+        removePosition(client);
+      }
+
+      const groupExists = await teamspeak.getServerGroupByName(position);
+      if (groupExists){
+        groupExists.addClient(client);
+        return;
+      }
+
       try {
         const createdServerGroup = await teamspeak.serverGroupCreate(position);
         await createdServerGroup.addPerm({
