@@ -47,9 +47,10 @@ const positionUpdate = async () => {
 
     const position = data.onlinePosition;
 
-    dataUpdate(data);
-
     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
+
+    dataUpdate(data, serverGroupsById);
+
 
     if (position) {
       if (serverGroupsById.some((item)=> item.name===position)){
@@ -120,7 +121,7 @@ const removePosition = async (client) => {
   }
 }
 
-const dataUpdate = async (data) => {
+const dataUpdate = async (data, serverGroupsById) => {
   const controllerStatus = data.controllerStatus === "HOME" ? 1 : 0;
   const rating = data.rating;
 
@@ -240,7 +241,7 @@ teamspeak.on("clientconnect", async (connected) => {
       return;
     }
   
-    dataUpdate(data);
+    dataUpdate(data, serverGroupsById);
 })
 
 teamspeak.on("clientdisconnect", async (connected) => {
