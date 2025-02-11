@@ -101,16 +101,23 @@ const clearRatings = async (client) => {
 }
 
 const removePosition = async (client) => {
-  const clientDbid = client.propcache.clientDatabaseId;
-  const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid);
+  try{
+    const clientDbid = client.propcache.clientDatabaseId;
 
-  const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
+    const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid);
 
-  if(positionToDelete){
-    await teamspeak.serverGroupDelClient(clientDbid, positionToDelete.sgid);
-    await teamspeak.serverGroupDel(positionToDelete.sgid);
+    const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
+
+    if(positionToDelete){
+      await teamspeak.serverGroupDelClient(clientDbid, positionToDelete.sgid);
+      await teamspeak.serverGroupDel(positionToDelete.sgid);
+    }
+  }catch(err){
+    console.log("error in removePosition")
+    console.log(err);
   }
 }
+
 
 teamspeak.on("ready", async () => {
   positionUpdate();
@@ -234,11 +241,7 @@ teamspeak.on("clientconnect", async (connected) => {
 
 teamspeak.on("clientdisconnect", async (connected) => {
   const client = connected.client;
-  try{
-    removePosition(client);
-  }catch(err){
-    console.log(err);
-  }
+  removePosition(client);
 });
 
 teamspeak.on("close", async () => {
