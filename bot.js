@@ -117,6 +117,7 @@ const removePosition = async (client) => {
     }
   }catch(err){
     console.log("error in removePosition")
+    console.log(client);
     console.log(err);
   }
 }
