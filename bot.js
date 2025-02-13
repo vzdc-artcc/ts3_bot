@@ -35,21 +35,17 @@ const positionUpdate = async () => {
     );
 
     if (!res.ok){
-      console.log("Unable to pull from website API/positionUpdate",client.nickname);
+      console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/positionUpdate",client.nickname);
       return;
     }
 
     const data = await res.json();
 
-    if (Object.keys(data).length === 0) {
-      return;
-    }
-
     const position = data.onlinePosition;
 
     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
 
-    dataUpdate(data, serverGroupsById);
+    dataUpdate(client, data, serverGroupsById);
 
 
     if (position) {
@@ -116,13 +112,13 @@ const removePosition = async (client) => {
       await teamspeak.serverGroupDel(positionToDelete.sgid);
     }
   }catch(err){
-    console.log("error in removePosition")
+    console.log(new Date().toLocaleTimeString(), "error in removePosition")
     console.log(client);
     console.log(err);
   }
 }
 
-const dataUpdate = async (data, serverGroupsById) => {
+const dataUpdate = async (client, data, serverGroupsById) => {
   const controllerStatus = data.controllerStatus === "HOME" ? 1 : 0;
   const rating = data.rating;
 
@@ -131,9 +127,7 @@ const dataUpdate = async (data, serverGroupsById) => {
   switch (controllerStatus) {
     case 0:
       if (
-        !serverGroupsById.some((item) => item.name === "Visitor") &&
-        rating
-      ) {
+        !serverGroupsById.some((item) => item.name === "Visitor") && rating) {
         client.addGroups(await teamspeak.getServerGroupByName("Visitor"));
       }
       break;
@@ -229,20 +223,16 @@ teamspeak.on("clientconnect", async (connected) => {
     );
 
     if (!res.ok){
-      console.log("Unable to pull from website API/giveRatings",client.nickname);
-      return;
-    }
-  
-    const data = await res.json();
-  
-    if (Object.keys(data).length === 0) {
+      console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/giveRatings",client.nickname);
       client.message("You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, and to assign online position roles.");
       client.message("You can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID");
       client.message("After you have added your Unique ID to your profile, please disconnect from the server and reconnect.");
       return;
     }
   
-    dataUpdate(data, serverGroupsById);
+    const data = await res.json();
+  
+    dataUpdate(client, data, serverGroupsById);
 })
 
 teamspeak.on("clientdisconnect", async (connected) => {
@@ -251,9 +241,9 @@ teamspeak.on("clientdisconnect", async (connected) => {
 });
 
 teamspeak.on("close", async () => {
-  console.log("disconnected, trying to reconnect...")
+  console.log(new Date().toLocaleTimeString(), "disconnected, trying to reconnect...")
   await teamspeak.reconnect(-1, 5000)
-  console.log("reconnected!")
+  console.log(new Date().toLocaleTimeString(), "reconnected!")
 })
 
 teamspeak.on("error", () => {});
