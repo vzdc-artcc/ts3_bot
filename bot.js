@@ -61,8 +61,17 @@ const positionUpdate = async () => {
 
       const groupExists = await teamspeak.getServerGroupByName(position);
       if (groupExists){
-        groupExists.addClient(client);
-        return;
+        try{
+          groupExists.addClient(client);
+          return;
+        }catch(err){
+          console.log("error in groupExists");
+          console.log(err.msg);
+          console.log(groupExists);
+          console.log(client);
+          console.log(serverGroupsById.some((item)=> item.name===position));
+          return;
+        }
       }
 
       try {
