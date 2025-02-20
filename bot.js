@@ -117,12 +117,13 @@ const removePosition = async (client) => {
     const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
 
     if(positionToDelete){
+      console.log("position to delete:", positionToDelete);
       await teamspeak.serverGroupDelClient(clientDbid, positionToDelete.sgid);
       await teamspeak.serverGroupDel(positionToDelete.sgid);
     }
   }catch(err){
     console.log(new Date().toLocaleTimeString(), "error in removePosition")
-    console.log(client);
+    console.log(client.propcache);
     console.log(err);
   }
 }
@@ -132,6 +133,10 @@ const dataUpdate = async (client, data, serverGroupsById) => {
   const rating = data.rating;
 
   // console.log(client.nickname,controllerStatus,rating,position,clientDbid);
+
+  if (serverGroupsById.some((item) => item.name === "ADD TS UNIQUE ID ON WEBSITE")){
+    client.delGroups("246");
+  }
 
   switch (controllerStatus) {
     case 0:
@@ -235,7 +240,10 @@ teamspeak.on("clientconnect", async (connected) => {
       console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/giveRatings",client.nickname);
       client.message("You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, and to assign online position roles.");
       client.message("You can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID");
+      client.message("Refer to this controller bulletin for additional information (vzdc.org/publications/cm6zjy455002gr8ugfapcb0am)");
       client.message("After you have added your Unique ID to your profile, please disconnect from the server and reconnect.");
+
+      client.addGroups("246");
       return;
     }
   
