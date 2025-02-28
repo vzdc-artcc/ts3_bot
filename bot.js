@@ -157,61 +157,61 @@ const dataUpdate = async (client, data, serverGroupsById) => {
       client.kickFromServer("Suspended members do not have access to the TeamSpeak");
     case 1:
       if (!serverGroupsById.some((item) => item.name === "Observer")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Observer"));
       }
       break;
     case 2:
       if (!serverGroupsById.some((item) => item.name === "Tower Trainee")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Tower Trainee"));
       }
       break;
     case 3:
       if (!serverGroupsById.some((item) => item.name === "Tower Controller")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Tower Controller"));
       }
       break;
     case 4:
       if (!serverGroupsById.some((item) => item.name === "Radar Controller")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Radar Controller"));
       }
       break;
     case 5:
       if (!serverGroupsById.some((item) => item.name === "Controller")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Controller"));
       }
       break;
     case 7:
       if (!serverGroupsById.some((item) => item.name === "Senior Controller")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Senior Controller"));
       }
       break;
     case 8:
       if (!serverGroupsById.some((item) => item.name === "Instructor")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Instructor"));
       }
       break;
     case 10:
       if (!serverGroupsById.some((item) => item.name === "Senior Instructor")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("Senior Instructor"));
       }
       break;
     case 11:
       if (!serverGroupsById.some((item) => item.name === "VATSIM Supervisor")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("VATSIM Supervisor"));
       }
       break;
     case 12:
       if (!serverGroupsById.some((item) => item.name === "VATSIM Admin")) {
-        clearRatings(client)
+        await clearRatings(client)
         client.addGroups(await teamspeak.getServerGroupByName("VATSIM Admin"));
       }
       break;
