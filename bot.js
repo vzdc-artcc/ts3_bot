@@ -63,15 +63,16 @@ const positionUpdate = async () => {
       if (groupExists){
         try{
           groupExists.addClient(client);
-          return;
+          // return;
         }catch(err){
           console.log("error in groupExists");
           console.log(err.msg);
           console.log(groupExists);
           console.log(client);
           console.log(serverGroupsById.some((item)=> item.name===position));
-          return;
+          // return;
         }
+        return;
       }
 
       try {
@@ -86,6 +87,7 @@ const positionUpdate = async () => {
         await createdServerGroup.addClient(client);
       } catch(err) {
         console.log(position);
+        console.log(client.nickname);
         console.log(err.msg);
       }
     }else{
