@@ -96,6 +96,89 @@ const positionUpdate = async () => {
   });
 }
 
+// const checkSweatbox = async () => {
+//   const clients = await teamspeak.clientList({ clientType: 0 });
+  
+
+//   clients.forEach(async (client) => {
+//     const clientUid = TeamSpeakClient.getUid(client);
+//     const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
+
+//     const sweatboxOne = await fetch('https://sweatbox1.env.vnas.vatsim.net/data-feed/controllers.json');
+
+//     const sweatboxTwo = await fetch('https://sweatbox2.env.vnas.vatsim.net/data-feed/controllers.json');
+
+// test = a.controllers.filter((obj)=>obj.artccId === 'ZKC' && obj.vatsimData.realName !== 'None')
+// console.log(test.map((a)=>a.vatsimData.callsign));
+
+
+//     if (!sweatboxOne.ok){
+//       console.log("couldn't pull from sweatbox 1");
+//       return;
+//     }else if (!sweatboxTwo.ok){
+//       console.log("couldn't pull from sweatbox 2");
+//       return;
+//     }
+
+//     const sweatboxOneData = await sweatboxOne.json();
+//     const sweatboxTwoData = await sweatboxTwo.json();
+
+//     const position = data.onlinePosition;
+
+//     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
+
+//     dataUpdate(client, data, serverGroupsById);
+
+
+//     if (position) {
+//       if (serverGroupsById.some((item)=> item.name===position)){
+//         return;
+//       }
+
+//       const previousPosition = serverGroupsById.find((item) => item.name.includes("_"));
+      
+//       if (previousPosition && previousPosition.name !== position){
+//         removePosition(client);
+//       }
+
+//       const groupExists = await teamspeak.getServerGroupByName(position);
+//       if (groupExists){
+//         try{
+//           groupExists.addClient(client);
+//           // return;
+//         }catch(err){
+//           console.log("error in groupExists");
+//           console.log(err.msg);
+//           console.log(groupExists);
+//           console.log(client);
+//           console.log(serverGroupsById.some((item)=> item.name===position));
+//           // return;
+//         }
+//         return;
+//       }
+
+//       try {
+//         const createdServerGroup = await teamspeak.serverGroupCreate(position);
+//         await createdServerGroup.addPerm({
+//           permname: "i_group_show_name_in_tree",
+//           permvalue: 1,
+//           skip: false,
+//           negate: false,
+//         });
+//         // await createdServerGroup.delPerm('b_group_is_permanent');
+//         await createdServerGroup.addClient(client);
+//       } catch(err) {
+//         console.log(position);
+//         console.log(client.nickname);
+//         console.log(err.msg);
+//       }
+//     }else{
+//       removePosition(client);
+//     }
+//   });
+// }
+
+
 const clearRatings = async (client) => {
   const ratings = ["Observer","Tower Trainee","Tower Controller","Radar Controller","Controller","Senior Controller","Instructor","Senior Instructor"];
   const clientUid = TeamSpeakClient.getUid(client);
@@ -222,6 +305,7 @@ const dataUpdate = async (client, data, serverGroupsById) => {
 
 teamspeak.on("ready", async () => {
   setInterval(positionUpdate,60*1000);
+  setInterval(dataUpdate,60*1000);
 });
 
 teamspeak.on("clientconnect", async (connected) => {
