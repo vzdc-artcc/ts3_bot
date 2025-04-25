@@ -26,24 +26,33 @@ const positionUpdate = async () => {
     const clientUid = TeamSpeakClient.getUid(client);
     const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
 
-    try{
-      const res = await fetch(
-        `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
-        {
-          method: "POST",
-          body: clientUid,
-        }
-      );
-    } catch {
-      console.log("Fetch failed")
-    }
+    // try{
+    //   const res = await fetch(
+    //     `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
+    //     {
+    //       method: "POST",
+    //       body: clientUid,
+    //     }
+    //   );
+    // } catch {
+    //   console.log("Fetch failed")
+    // }
 
-    if (!res.ok){
-      console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/positionUpdate",client.nickname);
-      return;
-    }
+    // if (!res.ok){
+    //   console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/positionUpdate",client.nickname);
+    //   return;
+    // }
 
-    const data = await res.json();
+    const data = await fetch(
+      `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
+      {
+        method: "POST",
+        body: clientUid,
+      }
+    ).then((res) => res.json())
+    .catch((err) => console.log(err));
+
+    // const data = await res.json();
 
     const position = data.onlinePosition;
 
