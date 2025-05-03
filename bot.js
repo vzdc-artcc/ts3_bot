@@ -127,8 +127,8 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   .then((res) => res.json())
   .catch((err) => console.log("couldn't pull from sweatbox 2", err));
 
-  const sweatboxOneData = sweatboxOne.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
-  const sweatboxTwoData = sweatboxTwo.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
+  const sweatboxOneData = sweatboxOne.controllers.filter((obj)=>obj.artccId === 'ZDC' && !obj.vatsimData.controllerInfo.includes("ATCTrainer"))
+  const sweatboxTwoData = sweatboxTwo.controllers.filter((obj)=>obj.artccId === 'ZDC' && !obj.vatsimData.controllerInfo.includes("ATCTrainer"))
 
 
 
