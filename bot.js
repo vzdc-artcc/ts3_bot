@@ -130,22 +130,23 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   const sweatboxOneData = sweatboxOne.controllers.filter((obj)=>obj.artccId === 'ZDC' && !obj.vatsimData.controllerInfo.includes("ATCTrainer"))
   const sweatboxTwoData = sweatboxTwo.controllers.filter((obj)=>obj.artccId === 'ZDC' && !obj.vatsimData.controllerInfo.includes("ATCTrainer"))
 
-
-
   sweatboxOneData.forEach(async (sweatboxUser)=>{
     if(sweatboxUser.vatsimData.cid === data.cid){
-      try {
-        const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 1 - "+sweatboxUser.vatsimData.callsign);
-        await createdServerGroup.addPerm({
-          permname: "i_group_show_name_in_tree",
-          permvalue: 1,
-          skip: false,
-          negate: false,
-        });
-        await createdServerGroup.addClient(client);
-      } catch(err) {
-        console.log(client.nickname);
-        console.log(err.msg);
+
+      if (!(await teamspeak.serverGroupList()).some((item) => item.propcache.name === "SWEATBOX 1 - "+sweatboxUser.vatsimData.callsign)){
+        try {
+          const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 1 - "+sweatboxUser.vatsimData.callsign);
+          await createdServerGroup.addPerm({
+            permname: "i_group_show_name_in_tree",
+            permvalue: 1,
+            skip: false,
+            negate: false,
+          });
+          await createdServerGroup.addClient(client);
+        } catch(err) {
+          console.log(client.nickname);
+          console.log(err.msg);
+        }
       }
     }
   })
@@ -163,18 +164,20 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
 
   sweatboxTwoData.forEach(async (sweatboxUser)=>{
     if(sweatboxUser.vatsimData.cid === data.cid){
-      try {
-        const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 2 - "+sweatboxUser.vatsimData.callsign);
-        await createdServerGroup.addPerm({
-          permname: "i_group_show_name_in_tree",
-          permvalue: 1,
-          skip: false,
-          negate: false,
-        });
-        await createdServerGroup.addClient(client);
-      } catch(err) {
-        console.log(client.nickname);
-        console.log(err.msg);
+      if (!(await teamspeak.serverGroupList()).some((item) => item.propcache.name === "SWEATBOX 2 - "+sweatboxUser.vatsimData.callsign)){
+        try {
+          const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 2 - "+sweatboxUser.vatsimData.callsign);
+          await createdServerGroup.addPerm({
+            permname: "i_group_show_name_in_tree",
+            permvalue: 1,
+            skip: false,
+            negate: false,
+          });
+          await createdServerGroup.addClient(client);
+        } catch(err) {
+          console.log(client.nickname);
+          console.log(err.msg);
+        }
       }
     }
   })
