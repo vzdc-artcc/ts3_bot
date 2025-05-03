@@ -219,10 +219,36 @@ const clearRatings = async (client) => {
 }
 
 const removePosition = async (client) => {
+
+  
   try{
     const clientDbid = client.propcache.clientDatabaseId;
 
     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid);
+
+    if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 1"))){
+      const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 1"));
+      try{
+        positionToDelete.forEach(async (item) => {
+          await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+          await teamspeak.serverGroupDel(item.sgid);
+        })
+      }catch(err){
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
+    }else if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 2"))){
+      const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 2"));
+      try{
+        positionToDelete.forEach(async (item) => {
+          await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+          await teamspeak.serverGroupDel(item.sgid);
+        })
+      }catch(err){
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
+    }
 
     const positionToDelete = serverGroupsById.find((item) => item.name.includes("_"));
 
