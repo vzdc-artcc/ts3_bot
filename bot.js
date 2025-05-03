@@ -48,20 +48,24 @@ const positionUpdate = async () => {
     }
 
     if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 1"))){
-      const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 1"));
+      const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 1"));
       try{
-        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
-        await teamspeak.serverGroupDel(positionToDelete.sgid);
+        positionToDelete.forEach(async (item) => {
+          await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+          await teamspeak.serverGroupDel(item.sgid);
+        })
       }catch(err){
         console.log(client.nickname);
         console.log(err.msg);
       }
     }else if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 2"))){
-      const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 2"));
+      const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 2"));
       try{
-        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
-        await teamspeak.serverGroupDel(positionToDelete.sgid);
-      }catch (err){
+        positionToDelete.forEach(async (item) => {
+          await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+          await teamspeak.serverGroupDel(item.sgid);
+        })
+      }catch(err){
         console.log(client.nickname);
         console.log(err.msg);
       }
@@ -152,16 +156,16 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   })
 
   if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 1")) && sweatboxOneData.length === 0){
-    const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 1"));
+    const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 1"));
     try{
       positionToDelete.forEach(async (item) => {
         await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
         await teamspeak.serverGroupDel(item.sgid);
       })
     }catch(err){
-      console.log(err);
+      console.log(client.nickname);
+      console.log(err.msg);
     }
-
   }
 
   sweatboxTwoData.forEach(async (sweatboxUser)=>{
@@ -185,14 +189,15 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   })
 
   if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 2")) && sweatboxTwoData.length === 0){
-    const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 2"));
+    const positionToDelete = serverGroupsById.filter((item) => item.name.includes("SWEATBOX 2"));
     try{
       positionToDelete.forEach(async (item) => {
         await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
         await teamspeak.serverGroupDel(item.sgid);
       })
-    }catch (err){
-      console.log(err);
+    }catch(err){
+      console.log(client.nickname);
+      console.log(err.msg);
     }
   }
 
@@ -324,6 +329,7 @@ const dataUpdate = async (client, data, serverGroupsById) => {
 }
 
 teamspeak.on("ready", async () => {
+  positionUpdate()
   setInterval(positionUpdate,60*1000);
 });
 
