@@ -47,10 +47,24 @@ const positionUpdate = async () => {
       return;
     }
 
-    if(serverGroupsById.some((item)=>item.name==="SWEATBOX 1")){
-      client.delGroups(1053);
-    }else if(serverGroupsById.some((item)=>item.name==="SWEATBOX 2")){
-      client.delGroups(1054);
+    if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 1"))){
+      const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 1"));
+      try{
+        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
+        await teamspeak.serverGroupDel(positionToDelete.sgid);
+      }catch(err){
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
+    }else if(serverGroupsById.some((item)=>item.name.includes("SWEATBOX 2"))){
+      const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 2"));
+      try{
+        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
+        await teamspeak.serverGroupDel(positionToDelete.sgid);
+      }catch (err){
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
     }
 
     dataUpdate(client, data, serverGroupsById);
@@ -116,24 +130,63 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   const sweatboxOneData = sweatboxOne.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
   const sweatboxTwoData = sweatboxTwo.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
 
-  sweatboxOneData.forEach((sweatboxUser)=>{
+
+
+  sweatboxOneData.forEach(async (sweatboxUser)=>{
     if(sweatboxUser.vatsimData.cid === data.cid){
-      client.addGroups(1053);
+      try {
+        const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 1 - "+sweatboxUser.vatsimData.callsign);
+        await createdServerGroup.addPerm({
+          permname: "i_group_show_name_in_tree",
+          permvalue: 1,
+          skip: false,
+          negate: false,
+        });
+        await createdServerGroup.addClient(client);
+      } catch(err) {
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
     }
   })
 
-  if(serverGroupsById.some((item)=>item.name==="SWEATBOX 1" && sweatboxOneData.length === 0)){
-    client.delGroups(1053);
+  if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 1")) && sweatboxOneData.length === 0){
+    const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 1"));
+    try{
+      await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
+      await teamspeak.serverGroupDel(positionToDelete.sgid);
+    }catch(err){
+      console.log(err);
+    }
+
   }
 
-  sweatboxTwoData.forEach((sweatboxUser)=>{
+  sweatboxTwoData.forEach(async (sweatboxUser)=>{
     if(sweatboxUser.vatsimData.cid === data.cid){
-      client.addGroups(1054);
+      try {
+        const createdServerGroup = await teamspeak.serverGroupCreate("SWEATBOX 2 - "+sweatboxUser.vatsimData.callsign);
+        await createdServerGroup.addPerm({
+          permname: "i_group_show_name_in_tree",
+          permvalue: 1,
+          skip: false,
+          negate: false,
+        });
+        await createdServerGroup.addClient(client);
+      } catch(err) {
+        console.log(client.nickname);
+        console.log(err.msg);
+      }
     }
   })
 
-  if(serverGroupsById.some((item)=>item.name==="SWEATBOX 2" && sweatboxTwoData.length === 0)){
-    client.delGroups(1054);
+  if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 2")) && sweatboxTwoData.length === 0){
+    const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 2"));
+    try{
+      await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
+      await teamspeak.serverGroupDel(positionToDelete.sgid);
+    }catch (err){
+      console.log(err);
+    }
   }
 
 }
