@@ -264,9 +264,7 @@ const dataUpdate = async (client, data, serverGroupsById) => {
 }
 
 teamspeak.on("ready", async () => {
-  console.log("ready")
-  positionUpdate();
-  // setInterval(positionUpdate,60*1000);
+  setInterval(positionUpdate,60*1000);
 });
 
 teamspeak.on("clientconnect", async (connected) => {
