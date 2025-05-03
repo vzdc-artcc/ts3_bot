@@ -154,8 +154,10 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 1")) && sweatboxOneData.length === 0){
     const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 1"));
     try{
-      await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
-      await teamspeak.serverGroupDel(positionToDelete.sgid);
+      positionToDelete.forEach(async (item) => {
+        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+        await teamspeak.serverGroupDel(item.sgid);
+      })
     }catch(err){
       console.log(err);
     }
@@ -185,8 +187,10 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
   if(serverGroupsById.some((item) => item.name.includes("SWEATBOX 2")) && sweatboxTwoData.length === 0){
     const positionToDelete = serverGroupsById.find((item) => item.name.includes("SWEATBOX 2"));
     try{
-      await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, positionToDelete.sgid);
-      await teamspeak.serverGroupDel(positionToDelete.sgid);
+      positionToDelete.forEach(async (item) => {
+        await teamspeak.serverGroupDelClient(client.propcache.clientDatabaseId, item.sgid);
+        await teamspeak.serverGroupDel(item.sgid);
+      })
     }catch (err){
       console.log(err);
     }
