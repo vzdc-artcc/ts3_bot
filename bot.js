@@ -25,23 +25,9 @@ const positionUpdate = async () => {
   clients.forEach(async (client) => {
     const clientUid = TeamSpeakClient.getUid(client);
     const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
+    const channelID = (await client.getInfo()).clientChannelGroupInheritedChannelId;
 
-    // try{
-    //   const res = await fetch(
-    //     `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
-    //     {
-    //       method: "POST",
-    //       body: clientUid,
-    //     }
-    //   );
-    // } catch {
-    //   console.log("Fetch failed")
-    // }
-
-    // if (!res.ok){
-    //   console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/positionUpdate",client.nickname);
-    //   return;
-    // }
+    const trainingChannels = ['56','62','92','58','55','61','478','89'];
 
     const data = await fetch(
       `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
@@ -52,11 +38,20 @@ const positionUpdate = async () => {
     ).then((res) => res.json())
     .catch((err) => console.log(err));
 
-    // const data = await res.json();
-
     const position = data.onlinePosition;
 
     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
+
+    if (trainingChannels.includes(channelID)){
+      checkSweatbox(client, data, serverGroupsById);
+      return;
+    }
+
+    if(serverGroupsById.some((item)=>item.name==="SWEATBOX 1")){
+      client.delGroups(1053);
+    }else if(serverGroupsById.some((item)=>item.name==="SWEATBOX 2")){
+      client.delGroups(1054);
+    }
 
     dataUpdate(client, data, serverGroupsById);
 
@@ -109,87 +104,39 @@ const positionUpdate = async () => {
   });
 }
 
-// const checkSweatbox = async () => {
-//   const clients = await teamspeak.clientList({ clientType: 0 });
-  
+const checkSweatbox = async (client, data, serverGroupsById) => {
+  const sweatboxOne = await fetch('https://sweatbox1.env.vnas.vatsim.net/data-feed/controllers.json')
+  .then((res) => res.json())
+  .catch((err) => console.log("couldn't pull from sweatbox 1", err));
 
-//   clients.forEach(async (client) => {
-//     const clientUid = TeamSpeakClient.getUid(client);
-//     const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
+  const sweatboxTwo = await fetch('https://sweatbox2.env.vnas.vatsim.net/data-feed/controllers.json')
+  .then((res) => res.json())
+  .catch((err) => console.log("couldn't pull from sweatbox 2", err));
 
-//     const sweatboxOne = await fetch('https://sweatbox1.env.vnas.vatsim.net/data-feed/controllers.json');
+  const sweatboxOneData = sweatboxOne.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
+  const sweatboxTwoData = sweatboxTwo.controllers.filter((obj)=>obj.artccId === 'ZDC' && obj.vatsimData.realName !== 'None')
 
-//     const sweatboxTwo = await fetch('https://sweatbox2.env.vnas.vatsim.net/data-feed/controllers.json');
+  sweatboxOneData.forEach((sweatboxUser)=>{
+    if(sweatboxUser.vatsimData.cid === data.cid){
+      client.addGroups(1053);
+    }
+  })
 
-// test = a.controllers.filter((obj)=>obj.artccId === 'ZKC' && obj.vatsimData.realName !== 'None')
-// console.log(test.map((a)=>a.vatsimData.callsign));
+  if(serverGroupsById.some((item)=>item.name==="SWEATBOX 1" && sweatboxOneData.length === 0)){
+    client.delGroups(1053);
+  }
 
+  sweatboxTwoData.forEach((sweatboxUser)=>{
+    if(sweatboxUser.vatsimData.cid === data.cid){
+      client.addGroups(1054);
+    }
+  })
 
-//     if (!sweatboxOne.ok){
-//       console.log("couldn't pull from sweatbox 1");
-//       return;
-//     }else if (!sweatboxTwo.ok){
-//       console.log("couldn't pull from sweatbox 2");
-//       return;
-//     }
+  if(serverGroupsById.some((item)=>item.name==="SWEATBOX 2" && sweatboxTwoData.length === 0)){
+    client.delGroups(1054);
+  }
 
-//     const sweatboxOneData = await sweatboxOne.json();
-//     const sweatboxTwoData = await sweatboxTwo.json();
-
-//     const position = data.onlinePosition;
-
-//     const serverGroupsById = await teamspeak.serverGroupsByClientId(clientDbid.cldbid);
-
-//     dataUpdate(client, data, serverGroupsById);
-
-
-//     if (position) {
-//       if (serverGroupsById.some((item)=> item.name===position)){
-//         return;
-//       }
-
-//       const previousPosition = serverGroupsById.find((item) => item.name.includes("_"));
-      
-//       if (previousPosition && previousPosition.name !== position){
-//         removePosition(client);
-//       }
-
-//       const groupExists = await teamspeak.getServerGroupByName(position);
-//       if (groupExists){
-//         try{
-//           groupExists.addClient(client);
-//           // return;
-//         }catch(err){
-//           console.log("error in groupExists");
-//           console.log(err.msg);
-//           console.log(groupExists);
-//           console.log(client);
-//           console.log(serverGroupsById.some((item)=> item.name===position));
-//           // return;
-//         }
-//         return;
-//       }
-
-//       try {
-//         const createdServerGroup = await teamspeak.serverGroupCreate(position);
-//         await createdServerGroup.addPerm({
-//           permname: "i_group_show_name_in_tree",
-//           permvalue: 1,
-//           skip: false,
-//           negate: false,
-//         });
-//         // await createdServerGroup.delPerm('b_group_is_permanent');
-//         await createdServerGroup.addClient(client);
-//       } catch(err) {
-//         console.log(position);
-//         console.log(client.nickname);
-//         console.log(err.msg);
-//       }
-//     }else{
-//       removePosition(client);
-//     }
-//   });
-// }
+}
 
 
 const clearRatings = async (client) => {
@@ -317,7 +264,9 @@ const dataUpdate = async (client, data, serverGroupsById) => {
 }
 
 teamspeak.on("ready", async () => {
-  setInterval(positionUpdate,60*1000);
+  console.log("ready")
+  positionUpdate();
+  // setInterval(positionUpdate,60*1000);
 });
 
 teamspeak.on("clientconnect", async (connected) => {
