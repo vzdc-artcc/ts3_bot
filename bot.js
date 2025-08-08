@@ -274,7 +274,7 @@ const dataUpdate = async (client, data, serverGroupsById) => {
     client.delGroups("50");
   }
 
-  if (serverGroupsById.every((sg) => sg.sgid !== "9") {
+  if (serverGroupsById.every((sg) => sg.sgid !== "9")) {
     switch (controllerStatus) {
     case 0:
       if (
