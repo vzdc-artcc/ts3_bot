@@ -27,7 +27,7 @@ const positionUpdate = async () => {
     const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
     const channelID = (await client.getInfo()).clientChannelGroupInheritedChannelId;
 
-    const trainingChannels = ['56','62','92','58','55','61','478','89'];
+    const trainingChannels = ['7','70','9','12','14'];
 
     const data = await fetch(
       `https://vzdc.org/api/teamspeak?key=${TEAMSPEAK_KEY}`,
@@ -205,7 +205,7 @@ const checkSweatbox = async (client, data, serverGroupsById) => {
 
 
 const clearRatings = async (client) => {
-  const ratings = ["Observer","Tower Trainee","Tower Controller","Radar Controller","Controller","Senior Controller","Instructor","Senior Instructor"];
+  const ratings = ["OBS","S1","S2","S3","C1","C3","I1","I3"];
   const clientUid = TeamSpeakClient.getUid(client);
   const clientDbid = await teamspeak.clientGetDbidFromUid(clientUid);
 
@@ -271,10 +271,11 @@ const dataUpdate = async (client, data, serverGroupsById) => {
   // console.log(client.nickname,controllerStatus,rating,position,clientDbid);
 
   if (serverGroupsById.some((item) => item.name === "ADD TS UNIQUE ID ON WEBSITE")){
-    client.delGroups("246");
+    client.delGroups("50");
   }
 
-  switch (controllerStatus) {
+  if (serverGroupsById.every((sg) => sg.sgid !== "9") {
+    switch (controllerStatus) {
     case 0:
       if (
         !serverGroupsById.some((item) => item.name === "Visitor") && rating) {
@@ -282,73 +283,74 @@ const dataUpdate = async (client, data, serverGroupsById) => {
       }
       break;
     case 1:
-      if (!serverGroupsById.some((item) => item.name === "Member")) {
-        client.addGroups(await teamspeak.getServerGroupByName("Member"));
+      if (!serverGroupsById.some((item) => item.name === "ZDC Member")) {
+        client.addGroups(await teamspeak.getServerGroupByName("ZDC Member"));
       }
       break;
+    }
   }
 
   switch (rating) {
     case 0:
       client.kickFromServer("Suspended members do not have access to the TeamSpeak");
     case 1:
-      if (!serverGroupsById.some((item) => item.name === "Observer")) {
+      if (!serverGroupsById.some((item) => item.name === "OBS")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Observer"));
+        client.addGroups(await teamspeak.getServerGroupByName("OBS"));
       }
       break;
     case 2:
-      if (!serverGroupsById.some((item) => item.name === "Tower Trainee")) {
+      if (!serverGroupsById.some((item) => item.name === "S1")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Tower Trainee"));
+        client.addGroups(await teamspeak.getServerGroupByName("S1"));
       }
       break;
     case 3:
-      if (!serverGroupsById.some((item) => item.name === "Tower Controller")) {
+      if (!serverGroupsById.some((item) => item.name === "S2")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Tower Controller"));
+        client.addGroups(await teamspeak.getServerGroupByName("S2"));
       }
       break;
     case 4:
-      if (!serverGroupsById.some((item) => item.name === "Radar Controller")) {
+      if (!serverGroupsById.some((item) => item.name === "S3")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Radar Controller"));
+        client.addGroups(await teamspeak.getServerGroupByName("S3"));
       }
       break;
     case 5:
-      if (!serverGroupsById.some((item) => item.name === "Controller")) {
+      if (!serverGroupsById.some((item) => item.name === "C1")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Controller"));
+        client.addGroups(await teamspeak.getServerGroupByName("C1"));
       }
       break;
     case 7:
-      if (!serverGroupsById.some((item) => item.name === "Senior Controller")) {
+      if (!serverGroupsById.some((item) => item.name === "C3")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Senior Controller"));
+        client.addGroups(await teamspeak.getServerGroupByName("C3"));
       }
       break;
     case 8:
-      if (!serverGroupsById.some((item) => item.name === "Instructor")) {
+      if (!serverGroupsById.some((item) => item.name === "I1")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Instructor"));
+        client.addGroups(await teamspeak.getServerGroupByName("I1"));
       }
       break;
     case 10:
-      if (!serverGroupsById.some((item) => item.name === "Senior Instructor")) {
+      if (!serverGroupsById.some((item) => item.name === "I3")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("Senior Instructor"));
+        client.addGroups(await teamspeak.getServerGroupByName("I3"));
       }
       break;
     case 11:
-      if (!serverGroupsById.some((item) => item.name === "VATSIM Supervisor")) {
+      if (!serverGroupsById.some((item) => item.name === "SUP")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("VATSIM Supervisor"));
+        client.addGroups(await teamspeak.getServerGroupByName("SUP"));
       }
       break;
     case 12:
-      if (!serverGroupsById.some((item) => item.name === "VATSIM Admin")) {
+      if (!serverGroupsById.some((item) => item.name === "ADM")) {
         await clearRatings(client)
-        client.addGroups(await teamspeak.getServerGroupByName("VATSIM Admin"));
+        client.addGroups(await teamspeak.getServerGroupByName("ADM"));
       }
       break;
   }
@@ -377,10 +379,10 @@ teamspeak.on("clientconnect", async (connected) => {
       console.log(new Date().toLocaleTimeString(), "Unable to pull from website API/giveRatings",client.nickname);
       client.message("You have not registered your TeamSpeak Unique ID on your profile in the vZDC website. This is required to sync your rating and membership status, and to assign online position roles.");
       client.message("You can find your TeamSpeak Unique ID under `Tools>Identities`. You may have to hit the `Go Advanced` link next to the OK button if you do not see your Unique ID");
-      client.message("Refer to this controller bulletin for additional information (vzdc.org/publications/cm6zjy455002gr8ugfapcb0am)");
+      client.message("Add your UID on the vZDC Website in the dropdown menu in the top right corner or in the sidebar.");
       client.message("After you have added your Unique ID to your profile, please disconnect from the server and reconnect.");
 
-      client.addGroups("246");
+      client.addGroups("50");
       return;
     }
   
