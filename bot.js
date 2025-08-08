@@ -9,9 +9,10 @@ require("dotenv").config({ path: "./.env" });
 const TEAMSPEAK_KEY = process.env.TEAMSPEAK_KEY;
 const SERVERQUERY_USER = process.env.SERVERQUERY_USER;
 const SERVERQUERY_PASS = process.env.SERVERQUERY_PASS;
+const TEAMSPEAK_HOST = process.env.TEAMSPEAK_HOST;
 
 const teamspeak = new TeamSpeak({
-  host: "ts.vzdc.org",
+  host: TEAMSPEAK_HOST,
   serverport: 9987,
   username: SERVERQUERY_USER,
   password: SERVERQUERY_PASS,
