@@ -11,6 +11,11 @@ const SERVERQUERY_USER = process.env.SERVERQUERY_USER;
 const SERVERQUERY_PASS = process.env.SERVERQUERY_PASS;
 const TEAMSPEAK_HOST = process.env.TEAMSPEAK_HOST;
 
+console.log(TEAMSPEAK_HOST);
+console.log(SERVERQUERY_USER);
+console.log(SERVERQUERY_PASS);
+console.log(TEAMSPEAK_KEY);
+
 const teamspeak = new TeamSpeak({
   host: TEAMSPEAK_HOST,
   serverport: 9987,
